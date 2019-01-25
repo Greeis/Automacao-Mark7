@@ -9,20 +9,31 @@ pipeline {
         CI = true
     }
     stages {
-        stage('Bundle') {
+        stage('Run bundle') {
             steps {
                 sh "bundle install"
             }
         }
-        stage('Run Features') {
+        stage('Run SmokeTest') {
             steps {
                 script {
                     try {
                         sh "bundle exec cucumber -p ci -t @smoke"
                     } finally {
-                        cucumber fileIncludePattern: '**/*.json', jsonReportDirectory: 'log', sortingMethod: 'ALPHABETICAL'
+                        cucumber fileIncludePattern: '**/*.json', 
+                        jsonReportDirectory: 'log',
+                        sortingMethod: 'ALPHABETICAL'
                     }
                 }
+            }
+        }
+        stage('Notificando no Slack') {
+            steps {
+                slackSend baseUrl: 'https://hooks.slack.com/services/',
+                channel: '#builds',
+                color: 'good',
+                message: 'Testes processados com sucesso!',
+                tokenCredentialId: 'slack-build'
             }
         }
         stage('Read to Production?') {
