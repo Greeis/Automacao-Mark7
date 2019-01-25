@@ -1,0 +1,6 @@
+---
+default: -p html --format progress
+ci: -p json --format progress -p headless
+html: --format html --out=log/reports.html
+json: --format json --out=log/reports.json
+headless: BROWSER=headless
